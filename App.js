@@ -1,75 +1,33 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import UploadScreen from './screens/UploadScreen';
+import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
+import LocationScreen from './screens/LocationScreen';
+import GameScreen from './screens/GameScreen';  // Assuming you have a GameScreen.js
+const Stack = createNativeStackNavigator();
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { StyleSheet, View} from 'react-native';
 
 export default function App() {
 
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [viewImage, setViewImage] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const { status: cameraStatus } = await ImagePicker.getCameraPermissionsAsync(); // Fix typo and syntax error
-      if (cameraStatus !== 'granted') {
-        const newCameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-        
-        if (newCameraStatus.status !== 'granted') {
-          alert('We need camera and camera roll permissions to make this work.');
-        }
-      }
-    })();
-  }, []);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [4, 3],
-    quality: 1,
-  });
-
-  if (!result.canceled) {
-    setSelectedImage(result.assets[0].uri);
-  }
-  };
-
-const getFilenameFromUri = (uri) => {
-  if (uri) {
-    const uriParts = uri.split('/');
-    return uriParts[uriParts.length - 1];
-  }
-  return '';
-};
-
-const handleFilenamePress = () => {
-  setViewImage(!viewImage);
-};
-
   return (
     <View style={styles.container}>
-      <Text>Gardenia!</Text>
+    <NavigationContainer>
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Upload" component={UploadScreen} />
+      <Stack.Screen name="PlantIdentification" component={PlantIdentificationScreen} />
+      <Stack.Screen name="Location" component={LocationScreen} />
+      <Stack.Screen name="Game" component={GameScreen} />
+    </Stack.Navigator>
+    </NavigationContainer>
       <StatusBar style="auto" />
-      <View>
-          <TouchableOpacity
-            style={{
-              minWidth: '80%', minHeight: 40, borderRadius: 2, backgroundColor: 'lightgrey', alignItems: 'center', justifyContent: 'center', marginTop: 10,
-            }}
-            onPress={pickImage}
-          >
-            <Text>+ add attachment</Text>
-          </TouchableOpacity>
-          {selectedImage !== null ? (
-            <>
-              <TouchableOpacity onPress={handleFilenamePress}>
-                <Text>{getFilenameFromUri(selectedImage)}</Text>
-              </TouchableOpacity>
-              {viewImage && (
-                <Image source={{ uri: selectedImage }} style={{ width: 200, height: 200 }} />
-              )}
-            </>
-          ) : null}
-    </View>
+      {/* <Text>Gardenia!</Text> */}
     </View>
   );
 }
@@ -77,8 +35,27 @@ const handleFilenamePress = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // flexWrap: "wrap",
+    backgroundColor: '#E4F6F3',
+    
   },
+
 });
+
+// export default function App() {
+//   return (
+//     <View style={styles.container}>
+//       <Text>Gardenia!</Text>
+//       <StatusBar style="auto" />
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });
