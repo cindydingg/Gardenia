@@ -178,6 +178,7 @@ const Profile = ({ navigation }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -253,5 +254,6 @@ const styles = StyleSheet.create({
     fontFamily: ' ', // Ensure you have this font loaded if you use it
   },
 });
+
 
 export default Profile;
