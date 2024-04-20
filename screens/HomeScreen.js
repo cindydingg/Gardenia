@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 const Button = ({ text, onPress }) => (
@@ -7,20 +8,17 @@ const Button = ({ text, onPress }) => (
 );
 
 const HomeScreen = ({ navigation }) => {
-  const buttonsData = [
-    { key: 'login', text: 'Login' },
-    { key: 'createAccount', text: 'Create an Account' },
-    { key: 'continueWithGoogle', text: 'Continue with Google' },
-  ];
-
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Gardenia</Text>
       </View>
-      <Button text='Login' onPress={() => navigation.navigate('SignUp')}/>
-      <Button text='Create an Account' onPress={() => {}} />
-      <TouchableOpacity style={styles.googleButtonContainer} onPress={() => {}}>
+      <Button text='Login' onPress={() => navigation.navigate('SignUp', { mode: 'login' })}/>
+      <Button text='Create an Account' onPress={() => navigation.navigate('SignUp', { mode: 'signup' })} />
+      <TouchableOpacity style={styles.googleButtonContainer} onPress={() => {
+        // Here you will integrate Google sign-in functionality
+        // Example: signInWithGoogle();
+      }}>
         <Image
           resizeMode="contain"
           source={require('../assets/google.webp')}
@@ -50,7 +48,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_500Medium",
   },
   buttonContainer: {
-    fontFamily: "Poppins_500Medium",
     borderRadius: 40,
     backgroundColor: "#6FCF97",
     marginTop: 21,
@@ -84,26 +81,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-
-// import React from 'react';
-// import { StyleSheet, Text, View, Button } from 'react-native';
-
-// const HomeScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <Text>Home Page - Gardenia!</Text>
-//       <Button title="Go to Sign Up" onPress={() => navigation.navigate('SignUp')} />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
-
-// export default HomeScreen;
