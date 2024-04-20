@@ -82,7 +82,7 @@
 // });
 
 import React, { useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
 
@@ -95,6 +95,7 @@ const ButtonComponent = ({ text, onPress }) => (
 const PlantIdentification = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
   const cameraRef = useRef(null);
 
   useEffect(() => {
@@ -109,12 +110,26 @@ const PlantIdentification = () => {
     if (!cameraReady || !cameraRef.current) return;
     try {
       const photo = await cameraRef.current.takePictureAsync();
-      const asset = await MediaLibrary.createAssetAsync(photo.uri); 
-      Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+      setCapturedImageUri(photo.uri);
     } catch (error) {
-      Alert.alert("Error", "Failed to save photo: " + error.message);
+      // Alert.alert()
+      Alert.alert("Error", "Failed to take photo: " + error.message);
     }
   };
+
+  const handleCancel = () => {
+    setCapturedImageUri(null);
+  }
+
+  const handleToIdentify = async () => {
+    try {
+      const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
+      Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+    } catch (error) {
+      Alert.alert()
+      Alert.alert("Error", "Failed to save photo: " + error.message);
+    }
+  }
 
   if (hasPermission === null) {
     return <View />;
@@ -128,19 +143,28 @@ const PlantIdentification = () => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Scan Your Species</Text>
       </View>
+      {capturedImageUri && ( // Render the captured image if URI is available
+        <Image source={{ uri: capturedImageUri }} style={styles.previewContainer} />
+      )}
+      {!capturedImageUri && 
       <Camera
         ref={cameraRef}
         style={styles.previewContainer}
         onCameraReady={() => setCameraReady(true)}
       />
+      }
       <View style={styles.buttonsContainer}>
         <ButtonComponent
           text="Cancel"
-          onPress={() => Alert.alert("Cancel Pressed")}
+          onPress={handleCancel}
         />
         <ButtonComponent
           text="Take Photo"
           onPress={handleCapture}
+        />
+        <ButtonComponent
+          text="To Plant Identification"
+          onPress={handleToIdentify}
         />
       </View>
     </View>
