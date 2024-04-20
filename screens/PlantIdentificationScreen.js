@@ -92,7 +92,7 @@ const ButtonComponent = ({ text, onPress }) => (
   </TouchableOpacity>
 );
 
-const PlantIdentification = () => {
+const PlantIdentification = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
@@ -111,6 +111,7 @@ const PlantIdentification = () => {
     try {
       const photo = await cameraRef.current.takePictureAsync();
       setCapturedImageUri(photo.uri);
+      console.log(photo.uri);
     } catch (error) {
       // Alert.alert()
       Alert.alert("Error", "Failed to take photo: " + error.message);
@@ -123,10 +124,14 @@ const PlantIdentification = () => {
 
   const handleToIdentify = async () => {
     try {
-      const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
-      Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+      if (capturedImageUri) {
+        const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
+        Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+        navigation.navigate('Upload');
+      } else {
+        Alert.alert("No Image", "You haven't captured any image yet.");
+      }
     } catch (error) {
-      Alert.alert()
       Alert.alert("Error", "Failed to save photo: " + error.message);
     }
   }
@@ -163,7 +168,7 @@ const PlantIdentification = () => {
           onPress={handleCapture}
         />
         <ButtonComponent
-          text="To Plant Identification"
+          text="Identify!"
           onPress={handleToIdentify}
         />
       </View>
