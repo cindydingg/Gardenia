@@ -8,7 +8,7 @@ import UploadScreen from './screens/UploadScreen';
 import GardenScreen from './screens/GardenScreen';
 import React, { useEffect } from "react";
 import { getStorage, ref } from "firebase/storage";
-
+import LevelUpScreen from './screens/LevelUpScreen2';
 
 import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
 import LocationScreen from './screens/LocationScreen';
@@ -30,6 +30,7 @@ const App = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Upload" component={UploadScreen} />
       <Stack.Screen name="PlantIdentification" component={PlantIdentificationScreen} />
+      <Stack.Screen name="LevelUpScreen" component={LevelUpScreen} />
       <Stack.Screen name="Location" component={LocationScreen} />
       <Stack.Screen name="Game" component={GameScreen} />
       <Stack.Screen name="Garden" component={GardenScreen} />

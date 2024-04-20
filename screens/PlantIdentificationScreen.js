@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, Alert } from 'react-native';
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -11,11 +11,15 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 const { width } = Dimensions.get('window');
 
 const PlantIdentificationScreen = ({ route, navigation }) => {
-  const { imgBase64 } = route.params;
+  const { imgBase64  } = route.params;
   const [classificationResult, setClassificationResult] = useState(null);
   const [mimeType] = useState('image/jpeg')
   const [points, setPoints] = useState(0);
   const [user, setUser] = useState(null);
+  const [leveledUp, setLeveledUp] = useState(false);
+  const firstLevelUp = useRef(true);
+  const [updatedPoints, setUpdatedPoints] = useState(0);
+  const [level, setLevel] = useState(0);
 
   const processClassificationResult = (result) => {
     if (result && !result.endsWith("Not a Plant")) {
@@ -32,6 +36,10 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   }, [imgBase64]);
 
   useEffect(() => {
+    getLevel();
+  }, []);
+
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       setUser(user);
     });
@@ -46,6 +54,36 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
       updateUserPoints(user.uid, calculatedPoints);
     }
   }, [classificationResult, user]);
+
+  useEffect(() => {
+    console.log(firstLevelUp);
+    if (firstLevelUp.current){
+      firstLevelUp.current = false;
+      return;
+    }
+    navigation.navigate('LevelUpScreen', { points: updatedPoints, level: level });
+  }, [leveledUp]); // Only re-run the effect if taskCompleted changes
+  
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        const userRef = doc(db, 'users', user.uid);
+        try {
+          const userDoc = await getDoc(userRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setLevel(userData.level || 0);
+            setUpdatedPoints(userData.points || 0);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+  
+      fetchUserData();
+    }
+  }, [user]);
+  
 
   const classifyPlantImage = async (imageUri) => {
     if (!imageUri) {
@@ -74,19 +112,78 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
     }
   }
 
+  // const updateUserPoints = async (uid, pointsToAdd) => {
+  //   const userRef = doc(db, 'users', uid);
+  //   try {
+  //     // Update user's total points in Firestore
+  //     const userDoc = await getDoc(userRef);
+  //     if (userDoc.exists()){
+  //       const userData = userDoc.data();
+  //       const currentPoints = userData.points || 0;
+  //       setUpdatedPoints(currentPoints + pointsToAdd);
+  //     }
+  //     if (updatedPoints > (level + 1) * 100) {
+  //       updateLevel();
+  //       setLeveledUp(!leveledUp);
+  //     }
+  //     await updateDoc(userRef, {
+  //       points: updatedPoints
+  //     });
+  //   } catch (error) {
+  //     console.error("Error updating user points:", error);
+  //   }
+  // };
   const updateUserPoints = async (uid, pointsToAdd) => {
     const userRef = doc(db, 'users', uid);
-    let updatedPoints = 0;
     try {
-      // Update user's total points in Firestore
+      // Fetch user's current points from Firestore
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const currentPoints = userData.points || 0;
+        const newPoints = currentPoints + pointsToAdd;
+  
+        // Check if level should be updated
+        if (newPoints > (level + 1) * 100) {
+          setLevel(level + 1);
+          setLeveledUp(true);
+        }
+  
+        // Update Firestore
+        await updateDoc(userRef, {
+          points: newPoints,
+          level: level
+        });
+  
+        setUpdatedPoints(newPoints);
+      }
+    } catch (error) {
+      console.error("Error updating user points:", error);
+    }
+  };
+  
+
+  const getLevel = async (uid) => {
+    const userRef = doc(db, 'users', uid);
+    try {
+      // Update user's level in Firestore
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()){
         const userData = userDoc.data();
-        const currentPoints = userData.points || 0;
-        updatedPoints = currentPoints + pointsToAdd;
+        setLevel(userData.level || 0);
       }
+    } catch (error) {
+      console.error("Error updating user points:", error);
+    }
+  };
+
+  const updateLevel = async (uid) => {
+    const userRef = doc(db, 'users', uid);
+    try {
+      setLevel(level+1);
+      // Update user's level in Firestore
       await updateDoc(userRef, {
-        points: updatedPoints
+        level: level
       });
     } catch (error) {
       console.error("Error updating user points:", error);
@@ -147,6 +244,8 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
         </View>
       </View>
       <Text style={styles.pointsHeader}> {points ? `+${points} points` : ''}</Text>
+      <Text>Total Points: {updatedPoints}</Text>
+      <Text>Level: {level}</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Upload')}
