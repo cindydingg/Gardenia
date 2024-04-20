@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/ngrok": "^4.1.0",
+    "@google/generative-ai": "^0.7.1",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "expo": "^50.0.17",
