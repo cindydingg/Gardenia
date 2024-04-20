@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import UploadScreen from './screens/PlantIdentificationScreen';
-import PlantIdentificationScreen from './screens/UploadScreen';
+import UploadScreen from './screens/UploadScreen';
+import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
 import LocationScreen from './screens/LocationScreen';
 import GameScreen from './screens/GameScreen';  // Assuming you have a GameScreen.js
 const Stack = createNativeStackNavigator();

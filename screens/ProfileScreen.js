@@ -41,7 +41,7 @@ const Profile = ({ navigation }) => {
       </TouchableOpacity>
       <Button
         title="Add to Garden"
-        onPress={() => navigation.navigate('PlantIdentification')}
+        onPress={() => navigation.navigate('Upload')}
         color="#6FCF97"
       />
     </View>

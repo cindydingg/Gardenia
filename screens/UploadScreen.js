@@ -92,7 +92,7 @@ const ButtonComponent = ({ text, onPress }) => (
   </TouchableOpacity>
 );
 
-const PlantIdentification = ({ navigation }) => {
+const UploadScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
@@ -127,7 +127,7 @@ const PlantIdentification = ({ navigation }) => {
       if (capturedImageUri) {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
-        navigation.navigate('Upload');
+        navigation.navigate('PlantIdentification');
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
@@ -166,6 +166,7 @@ const PlantIdentification = ({ navigation }) => {
         <ButtonComponent
           text="Take Photo"
           onPress={handleCapture}
+
         />
         <ButtonComponent
           text="Identify!"
@@ -222,4 +223,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PlantIdentification;
+export default UploadScreen;

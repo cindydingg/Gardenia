@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
-const UploadScreen = ({ navigation }) => {
+const PlantIdentificationScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text>Upload Screen!</Text>
-      <Button title="Identify!" onPress={() => navigation.navigate('PlantIdentification')} />
+      <Button title="Identify!" onPress={() => navigation.navigate('Upload')} />
     </View>
   );
 };
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UploadScreen;
+export default PlantIdentificationScreen;
