@@ -4,8 +4,8 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 const PlantIdentificationScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text>Plant Identification!</Text>
-      <Button title="Go back to Profile" onPress={() => navigation.navigate('Profile')} />
+      <Text>Upload Screen!</Text>
+      <Button title="Identify!" onPress={() => navigation.navigate('Upload')} />
     </View>
   );
 };
