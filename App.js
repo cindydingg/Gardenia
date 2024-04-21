@@ -45,7 +45,6 @@ const App = () => {
       <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
     <Stack.Navigator initialRouteName="LevelUp">
-    <Stack.Navigator initialRouteName="Profile">
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
