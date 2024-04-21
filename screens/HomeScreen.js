@@ -7,6 +7,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+
 const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication, navigation }) => {
   return (
     <View style={styles.authContainer}>
@@ -68,7 +69,7 @@ export default HomeScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
-
+  console.log("DB:", db);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -76,6 +77,20 @@ export default HomeScreen = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
+const createUserDocument = async (user) => {
+  try {
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      profilePic: null,
+      points: 0,
+      images: [],
+      level: 0,
+    });
+    console.log('New user document created successfully:', user.uid);
+  } catch (error) {
+    console.error('Error creating user document: ', error);
+  }
+};
 
 const handleAuthentication = async () => {
   try {
@@ -89,12 +104,12 @@ const handleAuthentication = async () => {
         // Sign in
         await signInWithEmailAndPassword(auth, email, password);
         console.log('User signed in successfully!');
-        // navigation.navigate('Profile');  // Navigate to Profile on successful sign-in
       } else {
         // Sign up
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log('User created successfully!');
-        // navigation.navigate('Profile');  // Navigate to Profile on successful sign-up
+        // After successful sign-up, create user document
+        await createUserDocument(userCredential.user);
 
       }
     }

@@ -6,8 +6,11 @@ import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import UploadScreen from './screens/UploadScreen';
 import LevelUpScreen from './screens/LevelUpScreen2';
-import React, { useEffect } from "react";
 import GardenScreen from './screens/GardenScreen';
+import React, { useEffect } from "react";
+import { getStorage, ref } from "firebase/storage";
+
+
 import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
 import LocationScreen from './screens/LocationScreen';
 import GameScreen from './screens/GameScreen';  // Assuming you have a GameScreen.js
@@ -17,28 +20,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AppRegistry } from 'react-native';
 import { name as appName } from './app.json';
 
-//
-// import { db } from './backend/firebaseConfig'; // adjust the path as necessary
-// import { doc, setDoc } from "firebase/firestore"; 
-
-// const TestFirestore = async () => {
-//     try {
-//         await setDoc(doc(db, "cities", "LA"), {
-//             name: "Los Angeles",
-//             state: "CA",
-//             country: "USA"
-//         });
-//         alert('Document successfully written!');
-//     } catch (e) {
-//         console.error("Error adding document: ", e);
-//         alert('Error adding document: ' + e.message);
-//     }
-// };
-
 const App = () => {
-  // useEffect(() => {
-  //   TestFirestore(); // Test Firestore on component mount
-  // }, []);
 
   return (
     <View style={styles.container}>
