@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFF",
-    fontFamily: "Poppins_500Medium",
+    fontFamily: "Poppins",
   },
   toggleText: {
     color: '#3498db',

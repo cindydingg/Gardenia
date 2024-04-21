@@ -2,7 +2,6 @@ import React from 'react';
 import { Text, View, Button, TextInput } from 'react-native';
 import styles from './AppStyles'; // Make sure the path is correct
 
-
 const SignUp = ({ navigation }) => {
  return (
    <View style={styles.container}>
