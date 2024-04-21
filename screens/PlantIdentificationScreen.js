@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
 const PlantIdentificationScreen = ({ navigation }) => {
+  const image = navigation.getParam('image');
+  console.log(image);
   return (
     <View style={styles.container}>
       <Text>Upload Screen!</Text>

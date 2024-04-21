@@ -127,7 +127,7 @@ const UploadScreen = ({ navigation }) => {
       if (capturedImageUri) {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
-        navigation.navigate('PlantIdentification');
+        navigation.navigate('PlantIdentification', { image: capturedImageUri});
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
