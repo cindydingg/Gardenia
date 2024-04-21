@@ -102,6 +102,11 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
       </TouchableOpacity>
       <Text style={styles.header}>Points Gained: </Text>
       <Text style={styles.result}>{points || 'No points available'}</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Garden')} 
+      > 
+
+      <Text style={styles.backButtonText}>View my Garden</Text>
+      </TouchableOpacity>
     </View>
   );
 };
