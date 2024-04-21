@@ -28,7 +28,8 @@ const Profile = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headline}>Profile!</Text>
+      <Text style={styles.headline}>Level 2</Text>
+      <Text style={styles.headline2}>profile</Text>
       <View style={styles.imageContainer}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
@@ -36,14 +37,22 @@ const Profile = ({ navigation }) => {
           <View style={styles.placeholder} />
         )}
       </View>
-      <TouchableOpacity style={styles.button} onPress={pickImage}>
-        <Text style={styles.buttonText}>Upload Profile Picture</Text>
+      <Text style={styles.headline2}>my garden</Text>
+      <View style={styles.rectangle} />  
+      <TouchableOpacity style={styles.backButton} onPress={pickImage} 
+      > 
+      <Text style={styles.backButtonText}>Upload Profile Picture</Text>
       </TouchableOpacity>
-      <Button
-        title="Add to Garden"
-        onPress={() => navigation.navigate('Upload')}
-        color="#6FCF97"
-      />
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Upload')} 
+      > 
+      <Text style={styles.backButtonText}>Add to Garden</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Garden')} 
+      > 
+      <Text style={styles.backButtonText}>View Garden</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 };
@@ -62,9 +71,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
     fontWeight: '500',
   },
+  headline2: {
+    fontSize: 20,
+    color: '#219653',
+    marginBottom: 10,
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+  },
   imageContainer: {
-    width: 200,
-    height: 200,
+    width: 100,
+    height: 100,
     borderRadius: 100,
     marginBottom: 20,
     justifyContent: 'center',
@@ -81,6 +97,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     borderRadius: 100,  // Ensures the placeholder is round
   },
+  rectangle: {
+    width: 250,  // Match the width of the image container or adjust as needed
+    height: 200,   // Height for the rectangle
+    backgroundColor: '#ccc',  // Gray color
+    marginBottom: 15,  // Spacing below the rectangle
+  },
   button: {
     backgroundColor: '#6FCF97',
     padding: 10,
@@ -91,6 +113,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Poppins',
+  },
+  backButton: {
+    backgroundColor: '#6FCF97', // Feel free to change the background color
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  backButtonText: {
+    color: '#FFFFFF', // Making text color white
+    fontSize: 16,
+    fontFamily: 'Poppins', // Ensure you have this font loaded if you use it
   },
 });
 
