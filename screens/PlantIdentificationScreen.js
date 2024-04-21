@@ -1,11 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 
-const PlantIdentificationScreen = ({ navigation }) => {
+const PlantIdentificationScreen = ({ route, navigation }) => {
+  //retrieve classification result passed as a param
+  const { result } = route.params;
+
   return (
     <View style={styles.container}>
-      <Text>Upload Screen!</Text>
-      <Button title="Identify!" onPress={() => navigation.navigate('Upload')} />
+      <Text>Your plant has been identified:</Text>
+      <Text>{result}</Text>  
+      <Button title="Go Back to Upload" onPress={() => navigation.navigate('Upload')} />
     </View>
   );
 };

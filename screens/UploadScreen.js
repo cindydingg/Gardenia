@@ -99,6 +99,7 @@ const UploadScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
+  const [imgBase64, setImgBase64] = useState(null);
   const cameraRef = useRef(null);
 
   const [classificationResult, setClassificationResult] = useState(null);
@@ -113,14 +114,14 @@ const UploadScreen = ({ navigation }) => {
   }, []);
 
   const handleCapture = async () => {
-    console.log('hi!!!!!');
     if (!cameraReady || !cameraRef.current) return;
     try {
       const photo = await cameraRef.current.takePictureAsync(options={
         base64: true,
         quality: 0.5
       });
-      setCapturedImageUri(`data:image/jpeg;base64,${photo.base64}`);
+      setCapturedImageUri(photo.uri);
+      setImgBase64(`data:image/jpeg;base64,${photo.base64}`);
       //console.log("Base64 Data: ", photo.base64);
     } catch (error) {
       // Alert.alert()
@@ -133,11 +134,24 @@ const UploadScreen = ({ navigation }) => {
   }
 
   const handleToIdentify = async () => {
+    //await classifyPlantImage();
+    // if (capturedImageUri) {
+    //   try {
+    //     await MediaLibrary.createAssetAsync(capturedImageUri);
+    //     Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+    //   } catch (error) {
+    //     Alert.alert("Error", "Failed to save photo: " + error.message);
+    //   }
+    // } else {
+    //   Alert.alert("No Image", "You haven't captured any image yet.");
+    // }
     try {
+      //saves to library
       if (capturedImageUri) {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
-        navigation.navigate('PlantIdentification');
+        //pass classificationResult to next screen
+        navigation.navigate('PlantIdentification', { result: classificationResult });
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
@@ -160,17 +174,8 @@ const UploadScreen = ({ navigation }) => {
     }
   
     try {
-      // const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-  
-      // const prompt = "Write a story about Eggert, a notoriously hard CS professor at UCLA."
-  
-      // const result = await model.generateContent(prompt);
-      // const response = await result.response;
-      // const text = response.text();
-      // console.log(text);
-      // return text;
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "What plant species is this?";
+      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. Format it like this: Venus Flytrap. 50% rarity.";
       //console.log("NORMAL imageUri:", imageUri)
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
@@ -181,6 +186,7 @@ const UploadScreen = ({ navigation }) => {
       const text = await response.text();
       console.log(text);
       return text;
+    
    } catch (error) {
       console.error("Error:", error);
       Alert.alert('Classification Error', 'Failed to classify the image. Please try again.');
@@ -189,10 +195,11 @@ const UploadScreen = ({ navigation }) => {
   }
   
   const handleClassifyImage = async () => {
-    console.log("URI Provided to API: ", capturedImageUri);
-    const imageUri = capturedImageUri; 
-    const result = await classifyPlantImage(capturedImageUri);
+    //console.log("URI Provided to API: ", capturedImageUri);
+    const imageUri = imgBase64; 
+    const result = await classifyPlantImage(imgBase64);
     setClassificationResult(result);
+    
   };
   
   function fileToGenerativePart(uri) {
@@ -209,57 +216,7 @@ const UploadScreen = ({ navigation }) => {
       Alert.alert('Error', 'Invalid image format. Expected base64 encoded JPEG image.');
       return null;
     }
-    // const base64Marker = ';base64,';
-    // const base64Index = uri.indexOf(base64Marker) + base64Marker.length;
-  
-    // if (base64Index === base64Marker.length - 1) {
-    //   console.error('Error: URI does not contain base64 data.');
-    //   Alert.alert('Error', 'Invalid image URI. Please ensure it contains base64 encoded data.');
-    //   return null;
-    // }
-  
-    // const base64Data = uri.substring(base64Index);
-    // if (!base64Data) {
-    //   console.error('Error: Invalid image data.');
-    //   Alert.alert('Error', 'Invalid image data. Please select a proper image.');
-    //   return null;
-    // }
-  
-    // // Deduce mimeType from URI
-    // const mimeType = uri.startsWith('data:image/jpeg') ? 'image/jpeg' : 'image/png';
-  
-    // return {
-    //   inlineData: {
-    //     data: uri,
-    //     mimeType,
-    //   },
-    // };
-    
   }
-  
-    // // Ensure the URI contains 'base64,' before processing it
-    // if (!uri.includes('base64,')) {
-    //   console.error('Error: URI does not contain base64 data.');
-    //   Alert.alert('Error', 'Invalid image URI. Please ensure it contains base64 encoded data.');
-    //   return null;
-    // }
-  
-    // const base64Index = uri.indexOf('base64,') + 'base64,'.length;
-    // const base64Data = uri.substring(base64Index);
-    
-    // if (!base64Data) {
-    //   console.error('Error: Invalid image data.');
-    //   Alert.alert('Error', 'Invalid image data. Please select a proper image.');
-    //   return null;
-    // }
-  
-    // // Assuming mimeType is determined or passed correctly as an argument
-    // return {
-    //   inlineData: {
-    //     data: base64Data,
-    //     mimeType,
-    //   },
-    // };
 
   const getFilenameFromUri = (uri) => {
     if (uri) {
@@ -268,6 +225,27 @@ const UploadScreen = ({ navigation }) => {
     }
     return '';
   };
+// // useEffect that triggers navigation when the result is ready
+// useEffect(() => {
+//   if (classificationResult) {
+//       handleToIdentify();
+//   }
+// }, [classificationResult]); // Only re-run the effect if classificationResult changes
+
+// const handleBoth = async () => {
+//   await handleClassifyImage();
+// };
+
+
+  const handleBoth = async () => {
+    await handleClassifyImage(); 
+    if (classificationResult) { // Check if there is a result from classification
+        handleToIdentify(); // Then, handle identification and navigation if classification was successful
+    } 
+//     // else {
+//     //     Alert.alert("Classification Error", "Unable to classify the image.");
+//     // }
+ };
 
   return (
     <View style={styles.container}>
@@ -296,13 +274,13 @@ const UploadScreen = ({ navigation }) => {
         />
         <ButtonComponent
           text="Identify!"
-          onPress={handleToIdentify}
+          onPress={handleBoth}
         />
       </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Button title="Classify Image" onPress={handleClassifyImage} />
       {classificationResult && <Text>{classificationResult}</Text>}
-    </View>
+    </View> */}
     </View>
   );
 };
