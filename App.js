@@ -1,20 +1,26 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import HomeScreen from './screens/HomeScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import UploadScreen from './screens/UploadScreen';
+import React, { useEffect } from "react";
+
 import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
 import LocationScreen from './screens/LocationScreen';
 import GameScreen from './screens/GameScreen';  // Assuming you have a GameScreen.js
 const Stack = createNativeStackNavigator();
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View} from 'react-native';
 
-export default function App() {
+import { AppRegistry } from 'react-native';
+import { name as appName } from './app.json';
+
+const App = () => {
 
   return (
     <View style={styles.container}>
+      <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -30,7 +36,7 @@ export default function App() {
       {/* <Text>Gardenia!</Text> */}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -41,6 +47,7 @@ const styles = StyleSheet.create({
   },
 
 });
+export default App;
 
 // export default function App() {
 //   return (

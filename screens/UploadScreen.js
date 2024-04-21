@@ -1,90 +1,9 @@
-// import { useState, useEffect } from 'react';
-// import { Text, View, TouchableOpacity, Image, StyleSheet
-// } from 'react-native';
-// import * as ImagePicker from 'expo-image-picker';
-
-// export default function JournalPage(){
-//   const [selectedImage, setSelectedImage] = useState(null);
-//   const [viewImage, setViewImage] = useState(false);
-
-//   useEffect(() => {
-//     (async () => {
-//       const { status: cameraStatus } = await ImagePicker.getCameraPermissionsAsync(); // Fix typo and syntax error
-//       if (cameraStatus !== 'granted') {
-//         const newCameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-        
-//         if (newCameraStatus.status !== 'granted') {
-//           alert('We need camera and camera roll permissions to make this work.');
-//         }
-//       }
-//     })();
-//   }, []);
-
-//   const pickImage = async () => {
-//     const result = await ImagePicker.launchCameraAsync({
-//     mediaTypes: ImagePicker.MediaTypeOptions.All,
-//     allowsEditing: true,
-//     aspect: [4, 3],
-//     quality: 1,
-//   });
-
-//   if (!result.canceled) {
-//     setSelectedImage(result.assets[0].uri);
-//   }
-//   };
-
-// const getFilenameFromUri = (uri) => {
-//   if (uri) {
-//     const uriParts = uri.split('/');
-//     return uriParts[uriParts.length - 1];
-//   }
-//   return '';
-// };
-
-// const handleFilenamePress = () => {
-//   setViewImage(!viewImage);
-// };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Gardenia!</Text>
-//       <View>
-//           <TouchableOpacity
-//             style={{
-//               minWidth: '80%', minHeight: 40, borderRadius: 2, backgroundColor: 'lightgrey', alignItems: 'center', justifyContent: 'center', marginTop: 10,
-//             }}
-//             onPress={pickImage}
-//           >
-//             <Text>+ add attachment</Text>
-//           </TouchableOpacity>
-//           {selectedImage !== null ? (
-//             <>
-//               <TouchableOpacity onPress={handleFilenamePress}>
-//                 <Text>{getFilenameFromUri(selectedImage)}</Text>
-//               </TouchableOpacity>
-//               {viewImage && (
-//                 <Image source={{ uri: selectedImage }} style={{ width: 200, height: 200 }} />
-//               )}
-//             </>
-//           ) : null}
-//     </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
-
 import React, { useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Button } from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
+
+
 
 const ButtonComponent = ({ text, onPress }) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
@@ -96,6 +15,7 @@ const UploadScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
+  const [imgBase64, setImgBase64] = useState(null);
   const cameraRef = useRef(null);
 
   useEffect(() => {
@@ -109,9 +29,13 @@ const UploadScreen = ({ navigation }) => {
   const handleCapture = async () => {
     if (!cameraReady || !cameraRef.current) return;
     try {
-      const photo = await cameraRef.current.takePictureAsync();
+      const photo = await cameraRef.current.takePictureAsync(options={
+        base64: true,
+        quality: 0.5
+      });
       setCapturedImageUri(photo.uri);
-      console.log(photo.uri);
+      setImgBase64(`data:image/jpeg;base64,${photo.base64}`);
+      //console.log("Base64 Data: ", photo.base64);
     } catch (error) {
       // Alert.alert()
       Alert.alert("Error", "Failed to take photo: " + error.message);
@@ -123,11 +47,26 @@ const UploadScreen = ({ navigation }) => {
   }
 
   const handleToIdentify = async () => {
+    //await classifyPlantImage();
+    // if (capturedImageUri) {
+    //   try {
+    //     await MediaLibrary.createAssetAsync(capturedImageUri);
+    //     Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+    //   } catch (error) {
+    //     Alert.alert("Error", "Failed to save photo: " + error.message);
+    //   }
+    // } else {
+    //   Alert.alert("No Image", "You haven't captured any image yet.");
+    // }
     try {
+      //saves to library
       if (capturedImageUri) {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
-        navigation.navigate('PlantIdentification', { image: capturedImageUri});
+        //pass classificationResult to next screen
+       // In your UploadScreen's handleToIdentify or a similar function
+      navigation.navigate('PlantIdentification', { imgBase64: imgBase64 });
+
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
@@ -142,6 +81,28 @@ const UploadScreen = ({ navigation }) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+// // useEffect that triggers navigation when the result is ready
+// useEffect(() => {
+//   if (classificationResult) {
+//       handleToIdentify();
+//   }
+// }, [classificationResult]); // Only re-run the effect if classificationResult changes
+
+// const handleBoth = async () => {
+//   await handleClassifyImage();
+// };
+
+
+  const handleBoth = async () => {
+    await handleClassifyImage(); 
+    if (classificationResult) { // Check if there is a result from classification
+        handleToIdentify(); // Then, handle identification and navigation if classification was successful
+    } 
+//     // else {
+//     //     Alert.alert("Classification Error", "Unable to classify the image.");
+//     // }
+ };
 
   return (
     <View style={styles.container}>
@@ -173,6 +134,10 @@ const UploadScreen = ({ navigation }) => {
           onPress={handleToIdentify}
         />
       </View>
+      {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Classify Image" onPress={handleClassifyImage} />
+      {classificationResult && <Text>{classificationResult}</Text>}
+    </View> */}
     </View>
   );
 };
@@ -220,6 +185,12 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontFamily: "Poppins, sans-serif",
+  },
+  button: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: 'lightblue',
+    alignItems: 'center',
   },
 });
 
