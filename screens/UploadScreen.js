@@ -82,9 +82,12 @@
 // });
 
 import React, { useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Button } from "react-native";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+const genAI = new GoogleGenerativeAI(key="AIzaSyABO4W2bUHvP5BZkeGDe_5js5Z_aVx5TF4");
 
 const ButtonComponent = ({ text, onPress }) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
@@ -96,7 +99,11 @@ const UploadScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [capturedImageUri, setCapturedImageUri] = useState(null); // New state 
+  const [imgBase64, setImgBase64] = useState(null);
   const cameraRef = useRef(null);
+
+  const [classificationResult, setClassificationResult] = useState(null);
+  const [mimeType, setMimeType] = useState('image/jpeg')
 
   useEffect(() => {
     (async () => {
@@ -109,9 +116,13 @@ const UploadScreen = ({ navigation }) => {
   const handleCapture = async () => {
     if (!cameraReady || !cameraRef.current) return;
     try {
-      const photo = await cameraRef.current.takePictureAsync();
+      const photo = await cameraRef.current.takePictureAsync(options={
+        base64: true,
+        quality: 0.5
+      });
       setCapturedImageUri(photo.uri);
-      console.log(photo.uri);
+      setImgBase64(`data:image/jpeg;base64,${photo.base64}`);
+      //console.log("Base64 Data: ", photo.base64);
     } catch (error) {
       // Alert.alert()
       Alert.alert("Error", "Failed to take photo: " + error.message);
@@ -123,11 +134,24 @@ const UploadScreen = ({ navigation }) => {
   }
 
   const handleToIdentify = async () => {
+    //await classifyPlantImage();
+    // if (capturedImageUri) {
+    //   try {
+    //     await MediaLibrary.createAssetAsync(capturedImageUri);
+    //     Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
+    //   } catch (error) {
+    //     Alert.alert("Error", "Failed to save photo: " + error.message);
+    //   }
+    // } else {
+    //   Alert.alert("No Image", "You haven't captured any image yet.");
+    // }
     try {
+      //saves to library
       if (capturedImageUri) {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
-        navigation.navigate('PlantIdentification');
+        //pass classificationResult to next screen
+        navigation.navigate('PlantIdentification', { result: classificationResult });
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
@@ -142,6 +166,86 @@ const UploadScreen = ({ navigation }) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
+  const classifyPlantImage = async (imageUri) => {
+    if (!imageUri) {
+      Alert.alert('Error', 'No image selected.');
+      return null;
+    }
+  
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. Format it like this: Venus Flytrap. 50% rarity.";
+      //console.log("NORMAL imageUri:", imageUri)
+      //console.log("base 64 imageUri:", imageUri.base64)
+      const imagePart = fileToGenerativePart(imageUri, mimeType);
+      
+      
+      const result = await model.generateContent([prompt, imagePart]);
+      const response = await result.response;
+      const text = await response.text();
+      console.log(text);
+      return text;
+    
+   } catch (error) {
+      console.error("Error:", error);
+      Alert.alert('Classification Error', 'Failed to classify the image. Please try again.');
+      return null;
+    }
+  }
+  
+  const handleClassifyImage = async () => {
+    //console.log("URI Provided to API: ", capturedImageUri);
+    const imageUri = imgBase64; 
+    const result = await classifyPlantImage(imgBase64);
+    setClassificationResult(result);
+    
+  };
+  
+  function fileToGenerativePart(uri) {
+    const prefix = 'data:image/jpeg;base64,';
+    if (uri.startsWith(prefix)) {
+      return {
+        inlineData: {
+          data: uri.substring(prefix.length),
+          mimeType,
+        },
+      };
+    } else {
+      console.error('Invalid URI format');
+      Alert.alert('Error', 'Invalid image format. Expected base64 encoded JPEG image.');
+      return null;
+    }
+  }
+
+  const getFilenameFromUri = (uri) => {
+    if (uri) {
+      const uriParts = uri.split('/');
+      return uriParts[uriParts.length - 1];
+    }
+    return '';
+  };
+// // useEffect that triggers navigation when the result is ready
+// useEffect(() => {
+//   if (classificationResult) {
+//       handleToIdentify();
+//   }
+// }, [classificationResult]); // Only re-run the effect if classificationResult changes
+
+// const handleBoth = async () => {
+//   await handleClassifyImage();
+// };
+
+
+  const handleBoth = async () => {
+    await handleClassifyImage(); 
+    if (classificationResult) { // Check if there is a result from classification
+        handleToIdentify(); // Then, handle identification and navigation if classification was successful
+    } 
+//     // else {
+//     //     Alert.alert("Classification Error", "Unable to classify the image.");
+//     // }
+ };
 
   return (
     <View style={styles.container}>
@@ -170,9 +274,13 @@ const UploadScreen = ({ navigation }) => {
         />
         <ButtonComponent
           text="Identify!"
-          onPress={handleToIdentify}
+          onPress={handleBoth}
         />
       </View>
+      {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Button title="Classify Image" onPress={handleClassifyImage} />
+      {classificationResult && <Text>{classificationResult}</Text>}
+    </View> */}
     </View>
   );
 };
@@ -220,6 +328,12 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontFamily: "Poppins, sans-serif",
+  },
+  button: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: 'lightblue',
+    alignItems: 'center',
   },
 });
 
