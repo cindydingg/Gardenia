@@ -134,9 +134,6 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   //   return 0; // Return 0 if no percentage is found
   // };
 
-const PlantIdentificationScreen = ({ navigation }) => {
-  const image = navigation.getParam('image');
-  console.log(image);
   return (
     <View style={styles.container}>
       <View style={styles.boxContainer}>
