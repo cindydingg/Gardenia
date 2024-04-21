@@ -16,34 +16,13 @@ import { StatusBar } from 'expo-status-bar';
 import { AppRegistry } from 'react-native';
 import { name as appName } from './app.json';
 
-//
-// import { db } from './backend/firebaseConfig'; // adjust the path as necessary
-// import { doc, setDoc } from "firebase/firestore"; 
-
-// const TestFirestore = async () => {
-//     try {
-//         await setDoc(doc(db, "cities", "LA"), {
-//             name: "Los Angeles",
-//             state: "CA",
-//             country: "USA"
-//         });
-//         alert('Document successfully written!');
-//     } catch (e) {
-//         console.error("Error adding document: ", e);
-//         alert('Error adding document: ' + e.message);
-//     }
-// };
-
 const App = () => {
-  // useEffect(() => {
-  //   TestFirestore(); // Test Firestore on component mount
-  // }, []);
 
   return (
     <View style={styles.container}>
       <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Upload">
+    <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />

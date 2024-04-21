@@ -1,8 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Dimensions, TouchableOpacity } from 'react-native';
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(key="AIzaSyABO4W2bUHvP5BZkeGDe_5js5Z_aVx5TF4");
+
+import { db, auth } from '../backend/firebaseConfig'; // adjust the path as necessary
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore"; 
 
 const { width } = Dimensions.get('window');
 
@@ -12,17 +15,27 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   const [classificationResult, setClassificationResult] = useState(null);
   const [mimeType, setMimeType] = useState('image/jpeg')
   const [points, setPoints] = useState(0);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     classifyPlantImage(imgBase64);
   }, [imgBase64]);
 
   useEffect(() => {
-    if (classificationResult) {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (classificationResult && user) {
       const calculatedPoints = parsePoints(classificationResult);
       setPoints(calculatedPoints);  // Update points state when classificationResult updates
+      updateUserPoints(user.uid, calculatedPoints);
     }
-  }, [classificationResult]);
+  }, [classificationResult, user]);
 
   const classifyPlantImage = async (imageUri) => {
     if (!imageUri) {
@@ -32,7 +45,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. Format it like this: Venus Flytrap. 50% rarity.";
+      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. It can be any number from 0%-100%. Format it like this: Venus Flytrap. 50% rarity.";
       //console.log("NORMAL imageUri:", imageUri)
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
@@ -50,6 +63,25 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
       return null;
     }
   }
+
+  const updateUserPoints = async (uid, pointsToAdd) => {
+    const userRef = doc(db, 'users', uid);
+    let updatedPoints = 0;
+    try {
+      // Update user's total points in Firestore
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()){
+        const userData = userDoc.data();
+        const currentPoints = userData.points || 0;
+        updatedPoints = currentPoints + pointsToAdd;
+      }
+      await updateDoc(userRef, {
+        points: updatedPoints
+      });
+    } catch (error) {
+      console.error("Error updating user points:", error);
+    }
+  };
 
   // const handleClassifyImage = async () => {
   //   //console.log("URI Provided to API: ", capturedImageUri);
