@@ -5,6 +5,7 @@ import HomeScreen from './screens/HomeScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import UploadScreen from './screens/UploadScreen';
+import LevelUpScreen from './screens/LevelUpScreen2';
 import React, { useEffect } from "react";
 
 import PlantIdentificationScreen from './screens/PlantIdentificationScreen';
@@ -43,11 +44,12 @@ const App = () => {
     <View style={styles.container}>
       <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="LevelUp">
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Upload" component={UploadScreen} />
+      <Stack.Screen name="LevelUp" component={LevelUpScreen} />
       <Stack.Screen name="PlantIdentification" component={PlantIdentificationScreen} />
       <Stack.Screen name="Location" component={LocationScreen} />
       <Stack.Screen name="Game" component={GameScreen} />
