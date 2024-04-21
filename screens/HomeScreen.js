@@ -62,7 +62,19 @@ export default HomeScreen = () => {
     return () => unsubscribe();
   }, [auth]);
 
-  
+  const createUserDocument = async (user) => {
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        points: 0,
+        images: [],
+      });
+      console.log('New user document created successfully:', user.uid);
+    } catch (error) {
+      console.error('Error creating user document: ', error);
+    }
+  };
+
   const handleAuthentication = async () => {
     try {
       if (user) {
@@ -77,8 +89,10 @@ export default HomeScreen = () => {
           console.log('User signed in successfully!');
         } else {
           // Sign up
-          await createUserWithEmailAndPassword(auth, email, password);
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           console.log('User created successfully!');
+          // After successful sign-up, create user document
+          await createUserDocument(userCredential.user);
         }
       }
     } catch (error) {
