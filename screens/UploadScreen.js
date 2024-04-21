@@ -63,7 +63,7 @@ const UploadScreen = ({ navigation }) => {
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
         //pass classificationResult to next screen
        // In your UploadScreen's handleToIdentify or a similar function
-      navigation.navigate('PlantIdentification', { imgBase64: imgBase64 });
+      navigation.navigate('Plant Identity', { imgBase64: imgBase64 });
 
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");

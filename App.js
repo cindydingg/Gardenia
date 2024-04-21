@@ -31,7 +31,7 @@ const App = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Upload" component={UploadScreen} />
       <Stack.Screen name="LevelUp" component={LevelUpScreen} />
-      <Stack.Screen name="PlantIdentification" component={PlantIdentificationScreen} />
+      <Stack.Screen name="Plant Identity" component={PlantIdentificationScreen} />
       <Stack.Screen name="Location" component={LocationScreen} />
       <Stack.Screen name="Game" component={GameScreen} />
       <Stack.Screen name="Garden" component={GardenScreen} />

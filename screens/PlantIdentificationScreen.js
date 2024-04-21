@@ -19,7 +19,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
 
   const processClassificationResult = (result) => {
     if (result && !result.endsWith("Not a Plant")) {
-      return result.slice(0, -4).trim();
+      return result.slice(0, -6).trim();
     }
     return result;
   };
@@ -55,8 +55,9 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 50% If it is not a plant, format it like this: Not a Plant";
-      //console.log("NORMAL imageUri:", imageUri)
+      const prompt = "Output only less than 5 words stating the plant species. Calculate the rarity of the plant based on how many exist in the world where 1% is super common and 100% is super rare. For instance, grass would be 1%. Make the percentage an integer. Format it like this: 'Venus Flytrap    50%' without the quotations. If it is not a plant, format it like this: Not a Plant";
+      // const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 50% If it is not a plant, format it like this: Not a Plant";
+      //console.log("NORMAL imageUri:", imageUri)r
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
       
@@ -121,8 +122,8 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
     const regex = /(\d+)%/; // Regular expression to find a number followed by '%'
     const match = resultString.match(regex);
     if (match && match[1]) {
-      const percentage = parseInt(match[1], 10); // Convert the percentage to an integer
-      return percentage; // Return the points calculated by multiplying by 10
+      const percentage = parseInt(match[1], 10);
+      return percentage;
     }
     return 0; // Return 0 if no percentage is found
   };
