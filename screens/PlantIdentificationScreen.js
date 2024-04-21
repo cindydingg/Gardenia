@@ -55,7 +55,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 30% If it is not a plant, format it like this: Not a Plant";
+      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 50% If it is not a plant, format it like this: Not a Plant";
       //console.log("NORMAL imageUri:", imageUri)
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
@@ -122,13 +122,12 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
     const match = resultString.match(regex);
     if (match && match[1]) {
       const percentage = parseInt(match[1], 10); // Convert the percentage to an integer
-      return percentage * 10; // Return the points calculated by multiplying by 10
+      return percentage; // Return the points calculated by multiplying by 10
     }
     return 0; // Return 0 if no percentage is found
   };
 
   // Calculate points from the result
-  const points = parsePoints(result);
 
   return (
     <View style={styles.container}>
@@ -201,7 +200,6 @@ const styles = StyleSheet.create({
   },
   plantName: {
     fontSize: 30,
-    fontFamily: ' ',
     fontWeight: 'bold',
     color: '#219653',
     textAlign: 'center'
@@ -216,13 +214,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: '#FFFFFF',
-    fontFamily: ' ',
     textAlign: 'center',
   },
   buttonTextPhoto: {
     fontSize: 25,
     color: '#FFFFFF',
-    fontFamily: ' ',
     textAlign: 'center',
   },
   boxContainer: {

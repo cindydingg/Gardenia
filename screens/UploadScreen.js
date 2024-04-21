@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     color: "#219653",
     textAlign: "center",
     fontSize: 28,
-    fontFamily: " , sans-serif",
+    fontFamily: "sans-serif",
   },
   previewContainer: {
     flex: 1,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontSize: 16,
-    fontFamily: " , sans-serif",
+    fontFamily: "sans-serif",
   },
   button: {
     marginBottom: 10,
