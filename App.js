@@ -13,28 +13,31 @@ import GameScreen from './screens/GameScreen';  // Assuming you have a GameScree
 const Stack = createNativeStackNavigator();
 import { StatusBar } from 'expo-status-bar';
 
-//
-import { db } from './backend/firebaseConfig'; // adjust the path as necessary
-import { doc, setDoc } from "firebase/firestore"; 
+import { AppRegistry } from 'react-native';
+import { name as appName } from './app.json';
 
-const TestFirestore = async () => {
-    try {
-        await setDoc(doc(db, "cities", "LA"), {
-            name: "Los Angeles",
-            state: "CA",
-            country: "USA"
-        });
-        alert('Document successfully written!');
-    } catch (e) {
-        console.error("Error adding document: ", e);
-        alert('Error adding document: ' + e.message);
-    }
-};
+//
+// import { db } from './backend/firebaseConfig'; // adjust the path as necessary
+// import { doc, setDoc } from "firebase/firestore"; 
+
+// const TestFirestore = async () => {
+//     try {
+//         await setDoc(doc(db, "cities", "LA"), {
+//             name: "Los Angeles",
+//             state: "CA",
+//             country: "USA"
+//         });
+//         alert('Document successfully written!');
+//     } catch (e) {
+//         console.error("Error adding document: ", e);
+//         alert('Error adding document: ' + e.message);
+//     }
+// };
 
 const App = () => {
-  useEffect(() => {
-    TestFirestore(); // Test Firestore on component mount
-  }, []);
+  // useEffect(() => {
+  //   TestFirestore(); // Test Firestore on component mount
+  // }, []);
 
   return (
     <View style={styles.container}>
