@@ -55,10 +55,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Calculate the rarity of the plant based on how many exist in the world where 1% is super common and 100% is super rare. For instance, grass would be 1%. Make the percentage an integer. Format it like this: 'Venus Flytrap    50%' without the quotations. If it is not a plant, format it like this: Not a Plant";
-      // const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 50% If it is not a plant, format it like this: Not a Plant";
-      //console.log("NORMAL imageUri:", imageUri)r
-      //console.log("base 64 imageUri:", imageUri.base64)
+      const prompt = "Output less than 5 words stating the plant species, unless it is not a plant, then output 'Not a Plant' exactly. For the same image, your output should be the same. If it is a plant, calculate the rarity of the plant based on how many exist in the world where 1% is super common and 100% is super rare. For instance, grass would be 1%. Make the percentage an integer. Format it like this: 'Venus Flytrap    50%' without the quotations.";
       const imagePart = fileToGenerativePart(imageUri, mimeType);
       
       const result = await model.generateContent([prompt, imagePart]);
@@ -93,13 +90,6 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
       console.error("Error updating user points:", error);
     }
   };
-
-  // const handleClassifyImage = async () => {
-  //   //console.log("URI Provided to API: ", capturedImageUri);
-  //   const imageUri = imgBase64; 
-  //   const result = await classifyPlantImage(imgBase64);
-  //   setClassificationResult(result);
-  // };
   
   function fileToGenerativePart(uri) {
     const prefix = 'data:image/jpeg;base64,';
