@@ -86,8 +86,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Button } from "
 import { Camera } from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI(key="AIzaSyABO4W2bUHvP5BZkeGDe_5js5Z_aVx5TF4");
+
 
 const ButtonComponent = ({ text, onPress }) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
@@ -102,8 +101,7 @@ const UploadScreen = ({ navigation }) => {
   const [imgBase64, setImgBase64] = useState(null);
   const cameraRef = useRef(null);
 
-  const [classificationResult, setClassificationResult] = useState(null);
-  const [mimeType, setMimeType] = useState('image/jpeg')
+
 
   useEffect(() => {
     (async () => {
@@ -151,7 +149,9 @@ const UploadScreen = ({ navigation }) => {
         const asset = await MediaLibrary.createAssetAsync(capturedImageUri); 
         Alert.alert("Photo saved", "Your photo was successfully saved in your media library.");
         //pass classificationResult to next screen
-        navigation.navigate('PlantIdentification', { result: classificationResult });
+       // In your UploadScreen's handleToIdentify or a similar function
+      navigation.navigate('PlantIdentification', { imgBase64: imgBase64 });
+
       } else {
         Alert.alert("No Image", "You haven't captured any image yet.");
       }
@@ -167,64 +167,8 @@ const UploadScreen = ({ navigation }) => {
     return <Text>No access to camera</Text>;
   }
 
-  const classifyPlantImage = async (imageUri) => {
-    if (!imageUri) {
-      Alert.alert('Error', 'No image selected.');
-      return null;
-    }
-  
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. Format it like this: Venus Flytrap. 50% rarity.";
-      //console.log("NORMAL imageUri:", imageUri)
-      //console.log("base 64 imageUri:", imageUri.base64)
-      const imagePart = fileToGenerativePart(imageUri, mimeType);
-      
-      
-      const result = await model.generateContent([prompt, imagePart]);
-      const response = await result.response;
-      const text = await response.text();
-      console.log(text);
-      return text;
-    
-   } catch (error) {
-      console.error("Error:", error);
-      Alert.alert('Classification Error', 'Failed to classify the image. Please try again.');
-      return null;
-    }
-  }
-  
-  const handleClassifyImage = async () => {
-    //console.log("URI Provided to API: ", capturedImageUri);
-    const imageUri = imgBase64; 
-    const result = await classifyPlantImage(imgBase64);
-    setClassificationResult(result);
-    
-  };
-  
-  function fileToGenerativePart(uri) {
-    const prefix = 'data:image/jpeg;base64,';
-    if (uri.startsWith(prefix)) {
-      return {
-        inlineData: {
-          data: uri.substring(prefix.length),
-          mimeType,
-        },
-      };
-    } else {
-      console.error('Invalid URI format');
-      Alert.alert('Error', 'Invalid image format. Expected base64 encoded JPEG image.');
-      return null;
-    }
-  }
 
-  const getFilenameFromUri = (uri) => {
-    if (uri) {
-      const uriParts = uri.split('/');
-      return uriParts[uriParts.length - 1];
-    }
-    return '';
-  };
+  
 // // useEffect that triggers navigation when the result is ready
 // useEffect(() => {
 //   if (classificationResult) {
@@ -274,7 +218,7 @@ const UploadScreen = ({ navigation }) => {
         />
         <ButtonComponent
           text="Identify!"
-          onPress={handleBoth}
+          onPress={handleToIdentify}
         />
       </View>
       {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

@@ -43,7 +43,7 @@ const App = () => {
     <View style={styles.container}>
       <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName="Upload">
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
