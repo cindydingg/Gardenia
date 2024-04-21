@@ -189,14 +189,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#219653',
     marginBottom: 20,
-    fontFamily: ' ',
+     
     fontWeight: '500',
   },
   headline2: {
     fontSize: 20,
     color: '#219653',
     marginBottom: 10,
-    fontFamily: ' ',
+     
     fontWeight: '400',
   },
   imageContainer: {
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: ' ',
+     
   },
   backButton: {
     backgroundColor: '#6FCF97', // Feel free to change the background color
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#FFFFFF', // Making text color white
     fontSize: 16,
-    fontFamily: ' ', // Ensure you have this font loaded if you use it
+      // Ensure you have this font loaded if you use it
   },
 });
 

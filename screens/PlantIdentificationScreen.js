@@ -128,7 +128,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   };
 
   // Calculate points from the result
-  const points = parsePoints(result);
+  points = parsePoints(result);
 
   return (
     <View style={styles.container}>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   plantName: {
     fontSize: 30,
-    fontFamily: ' ',
+     
     fontWeight: 'bold',
     color: '#219653',
     textAlign: 'center'
@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: '#FFFFFF',
-    fontFamily: ' ',
+     
     textAlign: 'center',
   },
   buttonTextPhoto: {
     fontSize: 25,
     color: '#FFFFFF',
-    fontFamily: ' ',
+     
     textAlign: 'center',
   },
   boxContainer: {
