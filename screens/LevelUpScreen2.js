@@ -1,130 +1,101 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, Button, Image, TouchableOpacity } from 'react-native';
 
 const LevelUpScreen = ({ navigation }) => {
-  const [imageUri, setImageUri] = useState(null);
 
   return (
-    // <View style={styles.container}>
-    <View style>
-      {/* <Text style={styles.headline}>Level Up!</Text> */}
-      <Text>Level Up!</Text>
+    <View style={styles.container}>
+        <View style={styles.horizontalContainer}>
+            <Image
+                source={require('../assets/level.png')}
+                style={styles.firstItem}
+                resizeMode="contain"
+            />
 
-      <Button
-        title="Continue"
-        onPress={() => navigation.navigate('Profile')}
-        color="#6FCF97"
+            <View style={styles.backButton}>
+                <Text style={styles.backButtonText}>Level Up!</Text>
+            </View>
+        </View>
+
+      <Text style={styles.expandedGardenText}>Your garden has expanded!</Text>
+      <Image
+        source={require('../assets/calla-lily.png')}
+        style={styles.callaLilyImage}
+        resizeMode="contain"
       />
+      
+      <TouchableOpacity style={styles.continueButton} onPress={() => navigation.navigate('Profile')}>
+        <Text style={styles.continueButtonText}>Continue</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
-
-
-// import React from 'react';
-// import { StyleSheet, Text, View, Button, Image } from 'react-native';
-
-// const LevelUpScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.levelHeader}>Level 2</Text>
-//       <View style={styles.gardenExpansionNotice}>
-//         <Text style={styles.gardenText}>Your garden has expanded</Text>
-//       </View>
-//       {/* <Image source={require('./path-to-level-image.png')} style={styles.levelImage} /> */}
-//       <Image source={require('../assets/lily.png')} style={styles.callaLilyImage} />
-//       <Text style={styles.callaLiliesText}>Calla Lilies Rarity: High</Text>
-//       <Text style={styles.plusTen}>+ 10</Text>
-//       {/* <Image source={require('./path-to-additional-image.png')} style={styles.additionalImage} /> */}
-//       <Button 
-//         title="Continue" 
-//         onPress={() => navigation.navigate('Profile')}
-//         color="#6FCF97"
-//         style={styles.continueButton}
-//       />
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#FFFFFF',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   levelHeader: {
-//     fontFamily: 'Poppins',
-//     fontSize: 25,
-//     lineHeight: 38,
-//     color: '#FFFFFF',
-//     position: 'absolute',
-//     top: 176, // Approximation based on your CSS
-//   },
-//   gardenExpansionNotice: {
-//     position: 'absolute',
-//     width: 175,
-//     height: 59,
-//     top: 251,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   gardenText: {
-//     fontFamily: 'Montserrat',
-//     fontSize: 19,
-//     lineHeight: 23,
-//     textAlign: 'center',
-//     color: '#426B1F',
-//   },
-//   levelImage: {
-//     width: 86,
-//     height: 90,
-//     position: 'absolute',
-//     top: 148,
-//     left: 38,
-//   },
-//   callaLilyImage: {
-//     width: 103,
-//     height: 214,
-//     position: 'absolute',
-//     top: 309,
-//     left: 143,
-//   },
-//   callaLiliesText: {
-//     width: 377,
-//     height: 56,
-//     position: 'absolute',
-//     top: 560,
-//     textAlign: 'center',
-//     fontFamily: 'Montserrat',
-//     fontSize: 19,
-//     lineHeight: 23,
-//     color: '#426B1F',
-//   },
-//   plusTen: {
-//     width: 48,
-//     height: 36,
-//     position: 'absolute',
-//     top: 627,
-//     left: 136,
-//     fontFamily: 'Poppins',
-//     fontSize: 24,
-//     lineHeight: 36,
-//     color: '#426B1F',
-//   },
-//   additionalImage: {
-//     width: 52,
-//     height: 47,
-//     position: 'absolute',
-//     left: 189,
-//     top: 616,
-//   },
-//   continueButton: {
-//     borderRadius: 40,
-//     borderWidth: 1,
-//     borderColor: '#FFFFFF',
-//     overflow: 'hidden',
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  horizontalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    marginRight: 30, // Adds space between the image and the text
+    marginLeft: 30, // Adds space between the image and the text
+  },
+  firstItem: {
+    flex: 1,
+    width: 50, // Set an appropriate width
+    height: 50, // Set an appropriate height
+    marginRight: 10, // Adds space between the image and the text
+  },
+  backButton: {
+    flex: 2,
+    backgroundColor: '#6FCF97',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    // marginBottom: 20,
+    // marginTop: 5,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 34,
+    fontFamily: 'Poppins',
+    textAlign: 'center',
+  },
+  continueButton: {
+    backgroundColor: '#6FCF97',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  continueButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: 'Poppins',
+    textAlign: 'center',
+  },
+  expandedGardenText: {
+    fontFamily: 'Montserrat',
+    fontSize: 19,
+    lineHeight: 23,
+    color: '#426B1F',
+    fontWeight: 'bold',
+    textAlign: 'center', // Corrects alignment for the text
+    marginBottom: 30,
+  },
+  callaLilyImage: {
+    width: 103,
+    height: 190,
+    marginBottom: 20,
+  }
+});
 
 export default LevelUpScreen;
