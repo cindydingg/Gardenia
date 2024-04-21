@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { db, app } from '../backend/firebaseConfig'; // adjust the path as necessary
+import { db, app, auth } from '../backend/firebaseConfig'; // adjust the path as necessary
 import { doc, setDoc } from "firebase/firestore";
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication }) => {
+const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication, navigation }) => {
   return (
     <View style={styles.authContainer}>
        <Text style={styles.title}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
@@ -37,75 +39,90 @@ const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogi
   );
 }
 
-const AuthenticatedScreen = ({ user, handleAuthentication }) => {
+const AuthenticatedScreen = ({ user, handleLogout, navigation }) => {
   return (
     <View style={styles.authContainer}>
-      <Text style={styles.title}>Welcome</Text>
-      <Text style={styles.emailText}>{user.email}</Text>
-      <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
+      <Text style={styles.title}>Welcome, {user.email}!</Text>
+      <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
+      <Button
+        title="Go to Profile"
+        onPress={() => navigation.navigate('Profile')}
+        color="#3498db" // You can change the color as needed
+      />
     </View>
   );
 };
 
-export default HomeScreen = () => {
+const handleLogout = async () => {
+  try {
+    await signOut(auth);
+    console.log('User logged out successfully!');
+    // Optionally handle any state updates or navigations post-logout
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
+export default HomeScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null); // Track user authentication state
+  const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
 
-  const auth = getAuth(app);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
-
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
-  
-  const handleAuthentication = async () => {
-    try {
-      if (user) {
-        // If user is already authenticated, log out
-        console.log('User logged out successfully!');
-        await signOut(auth);
+
+const handleAuthentication = async () => {
+  try {
+    if (user) {
+      // If user is already authenticated, log out
+      console.log('User logged out successfully!');
+      await signOut(auth);
+    } else {
+      // Sign in or sign up
+      if (isLogin) {
+        // Sign in
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('User signed in successfully!');
+        // navigation.navigate('Profile');  // Navigate to Profile on successful sign-in
       } else {
-        // Sign in or sign up
-        if (isLogin) {
-          // Sign in
-          await signInWithEmailAndPassword(auth, email, password);
-          console.log('User signed in successfully!');
-        } else {
-          // Sign up
-          await createUserWithEmailAndPassword(auth, email, password);
-          console.log('User created successfully!');
-        }
-      }
-    } catch (error) {
-      console.error('Authentication error:', error.message);
-    }
-  };
+        // Sign up
+        await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User created successfully!');
+        // navigation.navigate('Profile');  // Navigate to Profile on successful sign-up
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {user ? (
-        // Show user's email if user is authenticated
-        <AuthenticatedScreen user={user} handleAuthentication={handleAuthentication} />
-      ) : (
-        // Show sign-in or sign-up form if user is not authenticated
-        <AuthScreen
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          isLogin={isLogin}
-          setIsLogin={setIsLogin}
-          handleAuthentication={handleAuthentication}
-        />
-      )}
-    </ScrollView>
-  );
-}
+      }
+    }
+  } catch (error) {
+    console.error('Authentication error:', error.message);
+  }
+};
+
+return (
+  <ScrollView contentContainerStyle={styles.container}>
+    {user ? (
+      <AuthenticatedScreen user={user} handleLogout={handleLogout} navigation={navigation} />
+    ) : (
+      <AuthScreen
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        isLogin={isLogin}
+        setIsLogin={setIsLogin}
+        handleAuthentication={handleAuthentication}
+      />
+    )}
+  </ScrollView>
+);
+};
+
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -136,7 +153,17 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   buttonContainer: {
-    marginBottom: 16,
+    borderRadius: 40,
+    backgroundColor: "#6FCF97",
+    marginTop: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 17,
+    paddingHorizontal: 60,
+  },
+  buttonText: {
+    color: "#FFF",
+    fontFamily: "Poppins_500Medium",
   },
   toggleText: {
     color: '#3498db',
@@ -197,19 +224,19 @@ const styles = StyleSheet.create({
 //     fontSize: 28,
 //     fontFamily: "Poppins_500Medium",
 //   },
-//   buttonContainer: {
-//     borderRadius: 40,
-//     backgroundColor: "#6FCF97",
-//     marginTop: 21,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     paddingVertical: 17,
-//     paddingHorizontal: 60,
-//   },
-//   buttonText: {
-//     color: "#FFF",
-//     fontFamily: "Poppins_500Medium",
-//   },
+  // buttonContainer: {
+  //   borderRadius: 40,
+  //   backgroundColor: "#6FCF97",
+  //   marginTop: 21,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   paddingVertical: 17,
+  //   paddingHorizontal: 60,
+  // },
+  // buttonText: {
+  //   color: "#FFF",
+  //   fontFamily: "Poppins_500Medium",
+  // },
 //   googleButtonContainer: {
 //     flexDirection: "row",
 //     alignItems: "center",
