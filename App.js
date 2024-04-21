@@ -23,7 +23,6 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Check your Firestore database to see if the data was added.</Text>
     <NavigationContainer>
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={HomeScreen} />

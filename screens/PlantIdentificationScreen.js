@@ -18,8 +18,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   const [user, setUser] = useState(null);
 
   const processClassificationResult = (result) => {
-    // Check if result ends with "rarity." and remove the last 12 characters
-    if (result && !result.startsWith("Not a Plant")) {
+    if (result && !result.endsWith("Not a Plant")) {
       return result.slice(0, -4).trim();
     }
     return result;
@@ -56,7 +55,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 30% If it is not a plant, format it like this: Not a Plant :(";
+      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 30% If it is not a plant, format it like this: Not a Plant";
       //console.log("NORMAL imageUri:", imageUri)
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
@@ -138,7 +137,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.boxContainer}>
         <Text style={styles.header}>Plant Identity</Text>
-        <Text style={styles.matchPercentage}>{points ? `${points}% rarity` : '...'}</Text>
+        <Text style={styles.matchPercentage}>{points ? `${points}% rarity` : '<3'}</Text>
         <Image 
             source={require('../assets/planttest.webp')} 
             style={styles.plantImage}
@@ -147,7 +146,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
           <Text style={styles.plantName}>{displayClassificationResult || 'analyzing...'}</Text>
         </View>
       </View>
-      <Text style={styles.pointsHeader}> {points ? `+${points} points` : '...'}</Text>
+      <Text style={styles.pointsHeader}> {points ? `+${points} points` : ''}</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('Upload')}
@@ -166,13 +165,13 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   header: {
-    fontSize: 37,
+    fontSize: 30,
     color: '#219653',
     fontWeight: 'bold',
     marginTop: 20
   },
   pointsHeader: {
-    fontSize: 37,
+    fontSize: 30,
     color: '#219653',
     fontWeight: 'bold',
     marginTop: 55,
@@ -198,14 +197,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderColor: "#6FCF97",
     borderWidth: 2,
-    paddingHorizontal: 50,
-    paddingVertical: 20,
-    borderRadius: 20,
+    paddingHorizontal: 40,
+    paddingVertical: 10,
+    borderRadius: 15,
     marginTop: 20
   },
   plantName: {
     fontSize: 30,
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
     fontWeight: 'bold',
     color: '#219653',
     textAlign: 'center'
@@ -220,24 +219,24 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: '#FFFFFF',
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
     textAlign: 'center',
   },
   buttonTextPhoto: {
     fontSize: 25,
     color: '#FFFFFF',
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
     textAlign: 'center',
   },
   boxContainer: {
     backgroundColor: 'white',
-    padding: 55,
+    padding: 50,
     alignItems: 'center',
     shadowColor: '#6FCF97', // These shadow properties are for iOS
     shadowOffset: { width: 0, height: 1},
     shadowOpacity: 1,
     // shadowRadius: 3,
-    marginTop: 40,
+    marginTop: 30,
   },
 });
 

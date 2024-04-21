@@ -156,7 +156,10 @@ const Profile = ({ navigation }) => {
         )}
       </View>
       <Text style={styles.headline2}>my garden</Text>
-      <View style={styles.rectangle} />  
+      <Image
+        source={require('../assets/game.png')} // Adjust the path to your image file
+        style={styles.image2}
+      /> 
       <TouchableOpacity style={styles.backButton} onPress={pickImage} 
       > 
       <Text style={styles.backButtonText}>Upload Profile Picture</Text>
@@ -186,14 +189,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#219653',
     marginBottom: 20,
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
     fontWeight: '500',
   },
   headline2: {
     fontSize: 20,
     color: '#219653',
     marginBottom: 10,
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
     fontWeight: '400',
   },
   imageContainer: {
@@ -208,6 +211,11 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  image2: {
+    width: 350,  // Specify your desired width
+    height: 170, // Specify your desired height
+    resizeMode: 'contain' // or 'cover', 'stretch', etc.
   },
   placeholder: {
     width: '100%',
@@ -230,7 +238,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: 'Poppins',
+    fontFamily: ' ',
   },
   backButton: {
     backgroundColor: '#6FCF97', // Feel free to change the background color
@@ -242,7 +250,7 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#FFFFFF', // Making text color white
     fontSize: 16,
-    fontFamily: 'Poppins', // Ensure you have this font loaded if you use it
+    fontFamily: ' ', // Ensure you have this font loaded if you use it
   },
 });
 

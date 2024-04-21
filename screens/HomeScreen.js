@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFF",
-    fontFamily: "Poppins_500Medium",
+    fontFamily: " _500Medium",
   },
   toggleText: {
     color: '#3498db',
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
 //   headerText: {
 //     color: "#219653",
 //     fontSize: 28,
-//     fontFamily: "Poppins_500Medium",
+//     fontFamily: " _500Medium",
 //   },
   // buttonContainer: {
   //   borderRadius: 40,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   // },
   // buttonText: {
   //   color: "#FFF",
-  //   fontFamily: "Poppins_500Medium",
+  //   fontFamily: " _500Medium",
   // },
 //   googleButtonContainer: {
 //     flexDirection: "row",
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
 //     height: 24,
 //   },
 //   googleButtonText: {
-//     fontFamily: "Poppins_500Medium",
+//     fontFamily: " _500Medium",
 //   },
 // });
 

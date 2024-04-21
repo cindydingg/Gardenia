@@ -14,7 +14,7 @@ export default StyleSheet.create({
    fontSize: 28,
    color: '#219653',
    marginBottom: 50,
-   fontFamily: 'Poppins',
+  //  fontFamily: ' ',
    fontWeight: '500',
  },
  input: {
@@ -27,7 +27,7 @@ export default StyleSheet.create({
    borderRadius: 40,
    backgroundColor: '#FFFFFF',
    color: '#000000',
-   fontFamily: 'Poppins',
+   fontFamily: ' ',
    fontSize: 14,
  },
  image: {
