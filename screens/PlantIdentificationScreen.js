@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, Alert } from 'react-native';
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
 const genAI = new GoogleGenerativeAI(key="AIzaSyABO4W2bUHvP5BZkeGDe_5js5Z_aVx5TF4");
 
 import { db, auth } from '../backend/firebaseConfig'; // adjust the path as necessary
@@ -10,12 +11,22 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 const { width } = Dimensions.get('window');
 
 const PlantIdentificationScreen = ({ route, navigation }) => {
-  //retrieve classification result passed as a param
   const { imgBase64 } = route.params;
   const [classificationResult, setClassificationResult] = useState(null);
-  const [mimeType, setMimeType] = useState('image/jpeg')
+  const [mimeType] = useState('image/jpeg')
   const [points, setPoints] = useState(0);
   const [user, setUser] = useState(null);
+
+  const processClassificationResult = (result) => {
+    // Check if result ends with "rarity." and remove the last 12 characters
+    if (result && !result.startsWith("Not a Plant")) {
+      return result.slice(0, -4).trim();
+    }
+    return result;
+  };
+
+  // Process classificationResult before rendering
+  const displayClassificationResult = processClassificationResult(classificationResult);
 
   useEffect(() => {
     classifyPlantImage(imgBase64);
@@ -45,7 +56,7 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
   
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-      const prompt = "Output only less than 5 words stating the plant species. Give me a rating percentage of how rare this plant is. It can be any number from 0%-100%. Format it like this: Venus Flytrap. 50% rarity.";
+      const prompt = "Output only less than 5 words stating the plant species. Give me a percentage of how common this plant is where 1% means the plant is super common and 100% means this plant is super rare. Format it like this: Venus Flytrap 30% If it is not a plant, format it like this: Not a Plant :(";
       //console.log("NORMAL imageUri:", imageUri)
       //console.log("base 64 imageUri:", imageUri.base64)
       const imagePart = fileToGenerativePart(imageUri, mimeType);
@@ -128,15 +139,24 @@ const PlantIdentificationScreen = ({ navigation }) => {
   console.log(image);
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your plant has been identified:</Text>
-      <Text style={styles.result}>{classificationResult || 'Analyzing image...'}</Text>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Upload')} 
-      > 
-
-      <Text style={styles.backButtonText}>Go Back to Upload</Text>
+      <View style={styles.boxContainer}>
+        <Text style={styles.header}>Plant Identity</Text>
+        <Text style={styles.matchPercentage}>{points ? `${points}% rarity` : '...'}</Text>
+        <Image 
+            source={require('../assets/planttest.webp')} 
+            style={styles.plantImage}
+        />
+        <View style={styles.plantNameContainer}>
+          <Text style={styles.plantName}>{displayClassificationResult || 'analyzing...'}</Text>
+        </View>
+      </View>
+      <Text style={styles.pointsHeader}> {points ? `+${points} points` : '...'}</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Upload')}
+      >
+        <Text style={styles.buttonTextPhoto}>new photo</Text>
       </TouchableOpacity>
-      <Text style={styles.header}>Points Gained: </Text>
-      <Text style={styles.result}>{points || 'No points available'}</Text>
     </View>
   );
 };
@@ -146,40 +166,82 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButton: {
-    backgroundColor: '#6FCF97', // Feel free to change the background color
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 20,
-  },
-  backButtonText: {
-    color: '#FFFFFF', // Making text color white
-    fontSize: 16,
-    fontFamily: 'Poppins', // Ensure you have this font loaded if you use it
+    // justifyContent: 'center',
   },
   header: {
-    fontSize: 18,
+    fontSize: 37,
+    color: '#219653',
     fontWeight: 'bold',
-    marginBottom: 10, // Adding some margin for better spacing
+    marginTop: 20
   },
-  result: {
+  pointsHeader: {
+    fontSize: 37,
+    color: '#219653',
+    fontWeight: 'bold',
+    marginTop: 55,
+    marginBottom: 20,
+  },
+  matchPercentage: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    backgroundColor: '#6FCF97',
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginTop: 10
+  },
+  plantImage: {
+    width: 150, // Set the width as needed
+    height: 150, // Set the height as needed
+    resizeMode: 'contain', // Keep the plant image aspect ratio
+    marginTop: 20
+  },
+  plantNameContainer: {
+    backgroundColor: 'transparent',
+    borderColor: "#6FCF97",
+    borderWidth: 2,
+    paddingHorizontal: 50,
+    paddingVertical: 20,
+    borderRadius: 20,
+    marginTop: 20
+  },
+  plantName: {
+    fontSize: 30,
+    fontFamily: 'Poppins',
+    fontWeight: 'bold',
+    color: '#219653',
+    textAlign: 'center'
+  },
+  button: {
+    backgroundColor: '#6FCF97',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 20
+  },
+  buttonText: {
     fontSize: 16,
-    color: 'green', // Give some color to make it stand out
-    marginBottom: 20, // Space before the button
+    color: '#FFFFFF',
+    fontFamily: 'Poppins',
+    textAlign: 'center',
   },
-  buttonContainer: {
-    position: 'absolute',
-    width: 204.93, // Width as per your specification
-    height: 50, // Height as per your specification
-    left: (width - 204.93) / 2, // Center horizontally based on container width
-    top: 214, // Position from the top as specified
-    backgroundColor: 'gray', // Background color for visibility
-    justifyContent: 'center',
-    borderRadius: 25, // Optional: if you want rounded buttons
-  }
+  buttonTextPhoto: {
+    fontSize: 25,
+    color: '#FFFFFF',
+    fontFamily: 'Poppins',
+    textAlign: 'center',
+  },
+  boxContainer: {
+    backgroundColor: 'white',
+    padding: 55,
+    alignItems: 'center',
+    shadowColor: '#6FCF97', // These shadow properties are for iOS
+    shadowOffset: { width: 0, height: 1},
+    shadowOpacity: 1,
+    // shadowRadius: 3,
+    marginTop: 40,
+  },
 });
 
 export default PlantIdentificationScreen;
