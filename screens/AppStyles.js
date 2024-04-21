@@ -1,5 +1,12 @@
 import { StyleSheet } from 'react-native';
+import * as Font from 'expo-font';
 
+async function loadFonts() {
+  await Font.loadAsync({
+    'Poppins': require('../assets/Poppins-Regular.ttf'),
+    // 'Poppins-Bold': require('./assets/Poppins-Bold.ttf'),
+  });
+}
 
 export default StyleSheet.create({
  container: {

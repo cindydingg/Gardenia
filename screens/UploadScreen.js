@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Image, Button } from "
 import { Camera } from "expo-camera";
 import * as MediaLibrary from 'expo-media-library';
 
-
-
 const ButtonComponent = ({ text, onPress }) => (
   <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
     <Text style={styles.buttonText}>{text}</Text>

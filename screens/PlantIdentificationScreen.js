@@ -116,22 +116,19 @@ const PlantIdentificationScreen = ({ route, navigation }) => {
     }
   }
 
+  // Function to parse the percentage and calculate points
   const parsePoints = (resultString) => {
-    if (!resultString) return 0;
-    const regex = /(\d+)%/;
+    const regex = /(\d+)%/; // Regular expression to find a number followed by '%'
     const match = resultString.match(regex);
-    return match ? parseInt(match[1], 10) : 0;
+    if (match && match[1]) {
+      const percentage = parseInt(match[1], 10); // Convert the percentage to an integer
+      return percentage * 10; // Return the points calculated by multiplying by 10
+    }
+    return 0; // Return 0 if no percentage is found
   };
-  // // Function to parse the percentage and calculate points
-  // const parsePoints = (resultString) => {
-  //   const regex = /(\d+)%/; // Regular expression to find a number followed by '%'
-  //   const match = resultString.match(regex);
-  //   if (match && match[1]) {
-  //     const percentage = parseInt(match[1], 10); // Convert the percentage to an integer
-  //     return percentage * 10; // Return the points calculated by multiplying by 10
-  //   }
-  //   return 0; // Return 0 if no percentage is found
-  // };
+
+  // Calculate points from the result
+  const points = parsePoints(result);
 
   return (
     <View style={styles.container}>
