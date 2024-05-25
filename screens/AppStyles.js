@@ -3,7 +3,7 @@ import * as Font from 'expo-font';
 
 async function loadFonts() {
   await Font.loadAsync({
-    'Poppins': require('../assets/Poppins-Regular.ttf'),
+    // 'Poppins': require('../assets/Poppins-Regular.ttf'),
     // 'Poppins-Bold': require('./assets/Poppins-Bold.ttf'),
   });
 }
